@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../auth/data/datasources/accelerometer_datasource.dart';
 import '../../../auth/domain/entities/step_data.dart';
+import '../../../../features/history/domain/entities/activity_session.dart';
+import '../../../../features/history/presentation/bloc/history_bloc.dart';
 
 /// Widget que muestra el contador de pasos
 ///
@@ -21,6 +24,7 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
   StreamSubscription<StepData>? _subscription;
   StepData? _currentData;
   bool _isTracking = false;
+  DateTime? _startTime;
 
   @override
   void dispose() {
@@ -52,6 +56,7 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
     }
 
     await _dataSource.startCounting();
+    _startTime = DateTime.now();
 
     // SUSCRIBIRSE AL STREAM
     _subscription = _dataSource.stepStream.listen(
@@ -74,6 +79,22 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
     await _dataSource.stopCounting();
     _subscription?.cancel();
 
+    if ((_currentData?.stepCount ?? 0) > 0) {
+      final session = ActivitySession(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: 'Sesión de pasos',
+        startTime: _startTime!,
+        endTime: DateTime.now(),
+        activityType: _currentData?.activityType.name ?? 'stationary',
+        steps: _currentData?.stepCount ?? 0,
+        distanceKm: 0,
+        calories: _currentData?.estimatedCalories ?? 0,
+      );
+      if (context.mounted) {
+        context.read<HistoryBloc>().add(HistorySessionAdded(session));
+      }
+    }
+
     setState(() {
       _isTracking = false;
     });
@@ -85,7 +106,7 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
             // Header
@@ -107,33 +128,53 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
                 ),
               ],
             ),
-            const Divider(),
+            const Divider(height: 16),
 
-            // Contador
-            Text(
-              '${_currentData?.stepCount ?? 0}',
-              style: const TextStyle(
-                fontSize: 64,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF6366F1),
-              ),
-            ),
-            const Text('pasos', style: TextStyle(fontSize: 16, color: Colors.grey)),
-            const SizedBox(height: 16),
-
-            // Indicadores
+            // Pasos y calorías en una sola fila
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildInfoChip(
-                  icon: _getActivityIcon(_currentData?.activityType),
-                  label: _getActivityLabel(_currentData?.activityType),
-                  color: Colors.blue,
+                // Pasos (izquierda)
+                Column(
+                  children: [
+                    Text(
+                      '${_currentData?.stepCount ?? 0}',
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6366F1),
+                      ),
+                    ),
+                    const Text(
+                      'pasos',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ],
                 ),
-                _buildInfoChip(
-                  icon: Icons.local_fire_department,
-                  label: '${_currentData?.estimatedCalories.toStringAsFixed(1) ?? "0"} cal',
-                  color: Colors.orange,
+
+                // Separador vertical
+                Container(
+                  height: 60,
+                  width: 1,
+                  color: Colors.grey.withOpacity(0.3),
+                ),
+
+                // Calorías (derecha)
+                Column(
+                  children: [
+                    Text(
+                      '${_currentData?.estimatedCalories.toStringAsFixed(1) ?? "0"}',
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                    const Text(
+                      'cal',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -141,52 +182,5 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
         ),
       ),
     );
-  }
-
-  Widget _buildInfoChip({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: color),
-          const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w500)),
-        ],
-      ),
-    );
-  }
-
-  IconData _getActivityIcon(ActivityType? type) {
-    switch (type) {
-      case ActivityType.walking:
-        return Icons.directions_walk;
-      case ActivityType.running:
-        return Icons.directions_run;
-      case ActivityType.stationary:
-        return Icons.accessibility_new;
-      default:
-        return Icons.help_outline;
-    }
-  }
-
-  String _getActivityLabel(ActivityType? type) {
-    switch (type) {
-      case ActivityType.walking:
-        return 'Caminando';
-      case ActivityType.running:
-        return 'Corriendo';
-      case ActivityType.stationary:
-        return 'Quieto';
-      default:
-        return 'Detectando...';
-    }
   }
 }

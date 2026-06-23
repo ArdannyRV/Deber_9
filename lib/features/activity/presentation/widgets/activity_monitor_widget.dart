@@ -132,7 +132,7 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             Row(
@@ -157,10 +157,10 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
             const SizedBox(height: 10),
             Icon(
               _getActivityIcon(_currentState),
-              size: 64,
+              size: 40,
               color: _isMonitoring ? Colors.blue : Colors.grey,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
             Text(
               _isMonitoring ? _getActivityName(_currentState) : 'Inactivo',
               style: const TextStyle(

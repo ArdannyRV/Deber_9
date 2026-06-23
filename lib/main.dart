@@ -7,6 +7,9 @@ import 'features/auth/presentation/pages/login_page.dart';
 import 'features/steps/presentation/widgets/step_counter_widget.dart';
 import 'features/tracking/presentation/widgets/route_map_widget.dart';
 import 'features/activity/presentation/widgets/activity_monitor_widget.dart';
+import 'features/history/data/datasources/history_local_datasource.dart';
+import 'features/history/presentation/bloc/history_bloc.dart';
+import 'features/history/presentation/pages/history_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,24 +69,55 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Fitness Tracker'),
-        backgroundColor: const Color(0xFF6366F1),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            ActivityMonitorWidget(),
-            SizedBox(height: 16),
-            StepCounterWidget(),
-            SizedBox(height: 16),
-            RouteMapWidget(),
-          ],
+    return BlocProvider(
+      create: (_) => HistoryBloc(HistoryLocalDatasource())
+        ..add(HistoryLoadRequested()),
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Fitness Tracker'),
+            backgroundColor: const Color(0xFF6366F1),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            bottom: const TabBar(
+              indicatorColor: Colors.white,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white60,
+              tabs: [
+                Tab(icon: Icon(Icons.directions_run), text: 'Actividad'),
+                Tab(icon: Icon(Icons.history), text: 'Historial'),
+              ],
+            ),
+          ),
+          body: const TabBarView(
+            children: [
+              _ActivityTab(),
+              HistoryPage(),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _ActivityTab extends StatelessWidget {
+  const _ActivityTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        children: [
+          ActivityMonitorWidget(),
+          SizedBox(height: 12),
+          StepCounterWidget(),
+          SizedBox(height: 12),
+          RouteMapWidget(),
+          SizedBox(height: 16),
+        ],
       ),
     );
   }

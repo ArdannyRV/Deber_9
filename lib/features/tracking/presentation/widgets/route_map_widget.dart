@@ -62,7 +62,7 @@ class _RouteMapWidgetState extends State<RouteMapWidget> {
           final lastPoint = _route.points.last;
           final distance = lastPoint.distanceTo(point);
 
-          if (distance >= 2) {
+          if (distance >= 0.5) {
             setState(() {
               _route.addPoint(point);
               _statusMessage = 'Tracking - ${_route.points.length} puntos';
