@@ -103,8 +103,12 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: const Color(0xFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
@@ -113,22 +117,29 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Contador de Pasos',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                const Row(
+                  children: [
+                    Icon(Icons.directions_walk, color: Color(0xFFFF6B00), size: 20),
+                    SizedBox(width: 6),
+                    Text(
+                      'Contador de Pasos',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0A0A0A)),
+                    ),
+                  ],
                 ),
                 ElevatedButton.icon(
                   onPressed: _toggleTracking,
                   icon: Icon(_isTracking ? Icons.stop : Icons.play_arrow),
                   label: Text(_isTracking ? 'Detener' : 'Iniciar'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isTracking ? Colors.red : Colors.green,
-                    foregroundColor: Colors.white,
+                    backgroundColor: _isTracking ? const Color(0xFFF5F5F5) : const Color(0xFFFF6B00),
+                    foregroundColor: _isTracking ? const Color(0xFFFF6B00) : Colors.white,
+                    side: _isTracking ? const BorderSide(color: Color(0xFFFF6B00)) : null,
                   ),
                 ),
               ],
             ),
-            const Divider(height: 16),
+            const Divider(height: 16, color: Color(0xFFE8E8E8)),
 
             // Pasos y calorías en una sola fila
             Row(
@@ -141,13 +152,13 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
                       '${_currentData?.stepCount ?? 0}',
                       style: const TextStyle(
                         fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF6366F1),
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFFFF6B00),
                       ),
                     ),
                     const Text(
                       'pasos',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: Color(0xFF999999)),
                     ),
                   ],
                 ),
@@ -156,7 +167,7 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
                 Container(
                   height: 60,
                   width: 1,
-                  color: Colors.grey.withOpacity(0.3),
+                  color: const Color(0xFFE8E8E8),
                 ),
 
                 // Calorías (derecha)
@@ -166,13 +177,13 @@ class _StepCounterWidgetState extends State<StepCounterWidget> {
                       '${_currentData?.estimatedCalories.toStringAsFixed(1) ?? "0"}',
                       style: const TextStyle(
                         fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFFFF6B00),
                       ),
                     ),
                     const Text(
                       'cal',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: Color(0xFF999999)),
                     ),
                   ],
                 ),

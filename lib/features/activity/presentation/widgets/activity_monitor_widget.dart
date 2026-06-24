@@ -129,8 +129,12 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: const Color(0xFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -138,34 +142,42 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Monitor de Actividad',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                const Row(
+                  children: [
+                    Icon(Icons.bolt, color: Color(0xFFFF6B00), size: 20),
+                    SizedBox(width: 6),
+                    Text(
+                      'Monitor de Actividad',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0A0A0A)),
+                    ),
+                  ],
                 ),
                 ElevatedButton.icon(
                   onPressed: _toggleMonitoring,
                   icon: Icon(_isMonitoring ? Icons.stop : Icons.play_arrow),
                   label: Text(_isMonitoring ? 'Detener' : 'Iniciar'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isMonitoring ? Colors.red : Colors.blue,
-                    foregroundColor: Colors.white,
+                    backgroundColor: _isMonitoring ? const Color(0xFFF5F5F5) : const Color(0xFFFF6B00),
+                    foregroundColor: _isMonitoring ? const Color(0xFFFF6B00) : Colors.white,
+                    side: _isMonitoring ? const BorderSide(color: Color(0xFFFF6B00)) : null,
                   ),
                 ),
               ],
             ),
-            const Divider(),
+            const Divider(color: Color(0xFFE8E8E8)),
             const SizedBox(height: 10),
             Icon(
               _getActivityIcon(_currentState),
               size: 40,
-              color: _isMonitoring ? Colors.blue : Colors.grey,
+              color: _isMonitoring ? const Color(0xFFFF6B00) : const Color(0xFF999999),
             ),
             const SizedBox(height: 6),
             Text(
               _isMonitoring ? _getActivityName(_currentState) : 'Inactivo',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: _isMonitoring ? const Color(0xFF0A0A0A) : const Color(0xFF555555),
               ),
             ),
           ],
@@ -224,20 +236,25 @@ class _FallEmergencyDialogState extends State<FallEmergencyDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: const Color(0xFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+      ),
       title: Text(
         _isEmergency ? "¡EMERGENCIA!" : "¿Estás bien?",
         style: TextStyle(
-          color: _isEmergency ? Colors.red : Colors.black,
+          color: _isEmergency ? const Color(0xFFFF6B00) : const Color(0xFF0A0A0A),
           fontWeight: FontWeight.bold,
         ),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.warning_amber_rounded,
             size: 64,
-            color: _isEmergency ? Colors.red : Colors.orange,
+            color: Color(0xFFFF6B00),
           ),
           const SizedBox(height: 16),
           Text(
@@ -245,12 +262,13 @@ class _FallEmergencyDialogState extends State<FallEmergencyDialog> {
                 ? "Llamando a contacto de emergencia..."
                 : "Se detectó una posible caída. ¿Necesitas ayuda?",
             textAlign: TextAlign.center,
+            style: const TextStyle(color: Color(0xFF555555)),
           ),
           if (!_isEmergency) ...[
             const SizedBox(height: 16),
             Text(
               "$_secondsLeft s",
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF0A0A0A)),
             ),
           ]
         ],
@@ -261,7 +279,7 @@ class _FallEmergencyDialogState extends State<FallEmergencyDialog> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text("Estoy bien"),
+            child: const Text("Estoy bien", style: TextStyle(color: Color(0xFF555555))),
           ),
         TextButton(
           onPressed: () {
@@ -270,7 +288,7 @@ class _FallEmergencyDialogState extends State<FallEmergencyDialog> {
           },
           child: Text(
             _isEmergency ? "Cerrar" : "Llamar ahora",
-            style: const TextStyle(color: Colors.red),
+            style: const TextStyle(color: Color(0xFFFF6B00)),
           ),
         ),
       ],

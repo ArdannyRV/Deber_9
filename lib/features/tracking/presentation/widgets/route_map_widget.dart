@@ -96,8 +96,12 @@ class _RouteMapWidgetState extends State<RouteMapWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: const Color(0xFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+      ),
       child: Column(
         children: [
           // Header
@@ -109,17 +113,24 @@ class _RouteMapWidgetState extends State<RouteMapWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Ruta GPS',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    const Row(
+                      children: [
+                        Icon(Icons.route, color: Color(0xFFFF6B00)),
+                        SizedBox(width: 8),
+                        Text(
+                          'Ruta GPS',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0A0A0A)),
+                        ),
+                      ],
                     ),
                     ElevatedButton.icon(
                       onPressed: _toggleTracking,
                       icon: Icon(_isTracking ? Icons.stop : Icons.play_arrow),
                       label: Text(_isTracking ? 'Detener' : 'Iniciar'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isTracking ? Colors.red : Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: _isTracking ? const Color(0xFFF5F5F5) : const Color(0xFFFF6B00),
+                        foregroundColor: _isTracking ? const Color(0xFFFF6B00) : Colors.white,
+                        side: _isTracking ? const BorderSide(color: Color(0xFFFF6B00)) : null,
                       ),
                     ),
                   ],
@@ -128,7 +139,7 @@ class _RouteMapWidgetState extends State<RouteMapWidget> {
                 Text(
                   _statusMessage,
                   style: TextStyle(
-                    color: _isTracking ? Colors.green : Colors.grey,
+                    color: _isTracking ? const Color(0xFFFF6B00) : const Color(0xFF999999),
                     fontSize: 12,
                   ),
                 ),
@@ -141,12 +152,12 @@ class _RouteMapWidgetState extends State<RouteMapWidget> {
             height: 200,
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[300]!),
+              color: const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE8E8E8)),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               child: CustomPaint(
                 painter: RoutePainter(route: _route),
                 size: Size.infinite,
@@ -197,10 +208,10 @@ class _RouteMapWidgetState extends State<RouteMapWidget> {
   }) {
     return Column(
       children: [
-        Icon(icon, color: const Color(0xFF6366F1)),
+        Icon(icon, color: const Color(0xFFFF6B00)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0A0A0A))),
+        Text(label, style: const TextStyle(color: Color(0xFF999999), fontSize: 12)),
       ],
     );
   }
@@ -229,7 +240,7 @@ class RoutePainter extends CustomPainter {
       final textPainter = TextPainter(
         text: const TextSpan(
           text: 'Sin datos de ruta',
-          style: TextStyle(color: Colors.grey, fontSize: 14),
+          style: TextStyle(color: Color(0xFF999999), fontSize: 14),
         ),
         textDirection: TextDirection.ltr,
       );
@@ -277,7 +288,7 @@ class RoutePainter extends CustomPainter {
 
     // Dibujar línea
     final linePaint = Paint()
-      ..color = const Color(0xFF6366F1)
+      ..color = const Color(0xFFFF6B00)
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round

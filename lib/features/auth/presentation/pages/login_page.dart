@@ -10,6 +10,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
@@ -17,8 +18,16 @@ class LoginPage extends StatelessWidget {
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
+                content: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(left: BorderSide(color: Color(0xFFFF6B00), width: 4)),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Text(state.message, style: const TextStyle(color: Color(0xFF0A0A0A))),
+                ),
+                backgroundColor: const Color(0xFFFFFFFF),
+                padding: EdgeInsets.zero,
+                elevation: 0,
               ),
             );
           }
@@ -28,9 +37,9 @@ class LoginPage extends StatelessWidget {
             return Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFFFFFFF), Color(0xFFF5F5F5)],
                 ),
               ),
               child: SafeArea(
@@ -38,39 +47,50 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.fitness_center,
-                        size: 100,
-                        color: Colors.white,
+                      Container(
+                        width: 140,
+                        height: 140,
+                        decoration: const BoxDecoration(
+                          color: Color(0x1AFF6B00),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.fitness_center,
+                            size: 72,
+                            color: Color(0xFFFF6B00),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
                       const Text(
                         'Fitness Tracker',
                         style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          fontSize: 34,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0A0A0A),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Tu actividad. Tu progreso.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF555555),
                         ),
                       ),
                       const SizedBox(height: 48),
 
                       if (state is AuthLoading)
-                        const CircularProgressIndicator(color: Colors.white)
+                        const CircularProgressIndicator(color: Color(0xFFFF6B00))
                       else
                         ElevatedButton.icon(
                           onPressed: () {
                             context.read<AuthBloc>().add(AuthenticateRequested());
                           },
                           icon: const Icon(Icons.fingerprint),
-                          label: const Text('Autenticar con Huella'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF6366F1),
-                          ),
+                          label: const Text('Acceder con Huella Dactilar'),
                         ),
                     ],
                   ),

@@ -28,8 +28,54 @@ class FitnessApp extends StatelessWidget {
       title: 'Fitness Tracker',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6366F1)),
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFFFF6B00),
+          secondary: Color(0xFFFF8C38),
+          surface: Color(0xFFFFFFFF),
+          onPrimary: Color(0xFFFFFFFF),
+          onSurface: Color(0xFF0A0A0A),
+        ),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFFFFFFF),
+          foregroundColor: Color(0xFF0A0A0A),
+          elevation: 0,
+          shadowColor: Color(0x0A000000),
+          surfaceTintColor: Colors.transparent,
+          titleTextStyle: TextStyle(
+            color: Color(0xFF0A0A0A),
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.3,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          color: const Color(0xFFFFFFFF),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFF6B00),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          ),
+        ),
+        tabBarTheme: const TabBarThemeData(
+          indicatorColor: Color(0xFFFF6B00),
+          labelColor: Color(0xFFFF6B00),
+          unselectedLabelColor: Color(0xFF999999),
+          indicatorSize: TabBarIndicatorSize.label,
+        ),
+        dividerColor: const Color(0xFFE8E8E8),
       ),
       home: BlocProvider(
         create: (_) => AuthBloc(authenticateUser),
@@ -76,18 +122,26 @@ class HomePage extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Fitness Tracker'),
-            backgroundColor: const Color(0xFF6366F1),
-            foregroundColor: Colors.white,
+            title: const Text('Fitness Tracker', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0A0A0A))),
+            backgroundColor: const Color(0xFFFFFFFF),
+            foregroundColor: const Color(0xFF0A0A0A),
             elevation: 0,
-            bottom: const TabBar(
-              indicatorColor: Colors.white,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white60,
-              tabs: [
-                Tab(icon: Icon(Icons.directions_run), text: 'Actividad'),
-                Tab(icon: Icon(Icons.history), text: 'Historial'),
-              ],
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(49.0),
+              child: Column(
+                children: [
+                  const TabBar(
+                    indicatorColor: Color(0xFFFF6B00),
+                    labelColor: Color(0xFFFF6B00),
+                    unselectedLabelColor: Color(0xFF999999),
+                    tabs: [
+                      Tab(icon: Icon(Icons.bolt), text: 'Actividad'),
+                      Tab(icon: Icon(Icons.bar_chart), text: 'Historial'),
+                    ],
+                  ),
+                  const Divider(height: 1, thickness: 1, color: Color(0xFFE8E8E8)),
+                ],
+              ),
             ),
           ),
           body: const TabBarView(

@@ -3,8 +3,45 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/history_bloc.dart';
 import '../../domain/entities/activity_session.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
+
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  String _activeFilter = 'fecha';
+
+  Widget _buildFilterButton(String label, String value) {
+    final isActive = _activeFilter == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _activeFilter = value;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0x1AFF6B00) : const Color(0xFFFFFFFF),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isActive ? const Color(0xFFFF6B00) : const Color(0xFFE8E8E8),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? const Color(0xFFFF6B00) : const Color(0xFF999999),
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+            fontSize: 11,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +49,15 @@ class HistoryPage extends StatelessWidget {
       builder: (context, state) {
         final sessions =
             state is HistoryLoaded ? state.sessions : <ActivitySession>[];
+
+        final sorted = List.of(sessions);
+        if (_activeFilter == 'mas') {
+          sorted.sort((a, b) => b.steps.compareTo(a.steps));
+        } else if (_activeFilter == 'menos') {
+          sorted.sort((a, b) => a.steps.compareTo(b.steps));
+        } else if (_activeFilter == 'fecha') {
+          sorted.sort((a, b) => b.startTime.compareTo(a.startTime));
+        }
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -23,13 +69,23 @@ class HistoryPage extends StatelessWidget {
               Text(
                 'Sesiones (${sessions.length})',
                 style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0A0A0A)),
               ),
-              const SizedBox(height: 8),
-              if (sessions.isEmpty)
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  _buildFilterButton('📅 Más reciente', 'fecha'),
+                  const SizedBox(width: 8),
+                  _buildFilterButton('↓ Más pasos', 'mas'),
+                  const SizedBox(width: 8),
+                  _buildFilterButton('↑ Menos pasos', 'menos'),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (sorted.isEmpty)
                 _EmptyState()
               else
-                ...sessions.map((s) => _SessionCard(session: s)).toList(),
+                ...sorted.map((s) => _SessionCard(session: s)).toList(),
             ],
           ),
         );
@@ -68,16 +124,20 @@ class _WeeklyChart extends StatelessWidget {
         .toList();
 
     return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: const Color(0xFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Pasos esta semana',
+            const Text('Semana actual',
                 style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0A0A0A))),
             const SizedBox(height: 12),
             SizedBox(
               height: 120,
@@ -86,7 +146,7 @@ class _WeeklyChart extends StatelessWidget {
                   values: values,
                   labels: labels,
                   maxVal: maxVal == 0 ? 1 : maxVal,
-                  color: const Color(0xFF6366F1),
+                  color: const Color(0xFFFF6B00),
                 ),
                 size: Size.infinite,
               ),
@@ -114,8 +174,8 @@ class _BarChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final barPaint = Paint()..color = color;
-    final emptyPaint = Paint()..color = color.withOpacity(0.12);
-    final textStyle = const TextStyle(color: Colors.grey, fontSize: 11);
+    final emptyPaint = Paint()..color = const Color(0xFFE8E8E8);
+    final textStyle = const TextStyle(color: Color(0xFF999999), fontSize: 11);
 
     final chartHeight = size.height - 20;
     final barWidth = (size.width / values.length) * 0.5;
@@ -177,11 +237,22 @@ class _SessionCard extends StatelessWidget {
   Color _activityColor(String type) {
     switch (type) {
       case 'running':
-        return Colors.orange;
+        return const Color(0xFFFF6B00);
       case 'walking':
-        return Colors.blue;
+        return const Color(0xFF555555);
       default:
-        return Colors.grey;
+        return const Color(0xFF999999);
+    }
+  }
+
+  Color _activityBgColor(String type) {
+    switch (type) {
+      case 'running':
+        return const Color(0x1AFF6B00);
+      case 'walking':
+        return const Color(0xFFF0F0F0);
+      default:
+        return const Color(0xFFF0F0F0);
     }
   }
 
@@ -196,19 +267,27 @@ class _SessionCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Renombrar sesión'),
+        backgroundColor: const Color(0xFFFFFFFF),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+        ),
+        title: const Text('Renombrar sesión', style: TextStyle(color: Color(0xFF0A0A0A))),
         content: TextField(
           controller: controller,
           autofocus: true,
+          style: const TextStyle(color: Color(0xFF0A0A0A)),
           decoration: const InputDecoration(
             labelText: 'Nombre',
-            border: OutlineInputBorder(),
+            labelStyle: TextStyle(color: Color(0xFF555555)),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFE8E8E8))),
+            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color(0xFFFF6B00))),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            child: const Text('Cancelar', style: TextStyle(color: Color(0xFF555555))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -229,8 +308,6 @@ class _SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _activityColor(session.activityType);
-
     return Dismissible(
       key: Key(session.id),
       direction: DismissDirection.endToStart,
@@ -239,19 +316,22 @@ class _SessionCard extends StatelessWidget {
         padding: const EdgeInsets.only(right: 20),
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
+          color: const Color(0xFFFFEEEE),
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: const Icon(Icons.delete, color: Color(0xFFCC0000)),
       ),
       onDismissed: (_) {
         context.read<HistoryBloc>().add(HistorySessionDeleted(session.id));
       },
       child: Card(
+        color: const Color(0xFFFFFFFF),
         margin: const EdgeInsets.only(bottom: 10),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+        ),
+        elevation: 0,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
@@ -260,11 +340,11 @@ class _SessionCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: _activityBgColor(session.activityType),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(_activityIcon(session.activityType),
-                    color: color, size: 24),
+                    color: _activityColor(session.activityType), size: 24),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -273,18 +353,18 @@ class _SessionCard extends StatelessWidget {
                   children: [
                     Text(session.name,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
+                            color: Color(0xFF0A0A0A),
+                            fontWeight: FontWeight.w600, fontSize: 14),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
                     Text(
                       '${_formatDuration(session.duration)}  ·  ${session.steps} pasos  ·  ${session.calories.toStringAsFixed(1)} cal',
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      style: const TextStyle(color: Color(0xFF555555), fontSize: 12),
                     ),
                     Text(
                       '${session.startTime.day}/${session.startTime.month}/${session.startTime.year}',
-                      style:
-                          TextStyle(color: Colors.grey[400], fontSize: 11),
+                      style: const TextStyle(color: Color(0xFF999999), fontSize: 11),
                     ),
                   ],
                 ),
@@ -292,7 +372,7 @@ class _SessionCard extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.edit_outlined, size: 20),
                 onPressed: () => _showRenameDialog(context),
-                color: Colors.grey[500],
+                color: const Color(0xFF999999),
               ),
             ],
           ),
@@ -310,13 +390,13 @@ class _EmptyState extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Column(
           children: [
-            Icon(Icons.history, size: 64, color: Colors.grey[300]),
+            const Icon(Icons.bar_chart_outlined, size: 64, color: Color(0xFFE8E8E8)),
             const SizedBox(height: 12),
-            Text('Sin sesiones guardadas',
-                style: TextStyle(color: Colors.grey[400], fontSize: 15)),
+            const Text('Sin sesiones guardadas',
+                style: TextStyle(color: Color(0xFF999999), fontSize: 15)),
             const SizedBox(height: 4),
-            Text('Inicia una actividad en la pestaña Actividad',
-                style: TextStyle(color: Colors.grey[300], fontSize: 12)),
+            const Text('Inicia una actividad en la pestaña Actividad',
+                style: TextStyle(color: Color(0xFF999999), fontSize: 12)),
           ],
         ),
       ),
