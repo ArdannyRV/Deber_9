@@ -177,12 +177,9 @@ class _ActivityTabState extends State<_ActivityTab> {
     '"Siempre parece imposible hasta que se hace." — Nelson Mandela',
     '"No cuentes los días, haz que los días cuenten." — Muhammad Ali',
     '"La excelencia no es un acto, sino un hábito." — Will Durant',
-    '"La suerte es lo que sucede cuando la preparación se encuentra con la oportunidad." — Séneca',
-    '"La mejor manera de empezar es dejar de hablar y comenzar a hacer." — Walt Disney',
     '"El futuro depende de lo que hagas hoy." — Mahatma Gandhi',
     '"La perseverancia conquista todas las cosas." — Benjamin Franklin',
     '"La energía y la persistencia conquistan todas las cosas." — Benjamin Franklin',
-    '"El éxito es la suma de pequeños esfuerzos repetidos cada día." — Robert Collier',
   ];
 
   late final String _quote;
@@ -197,7 +194,6 @@ class _ActivityTabState extends State<_ActivityTab> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           // Banner de bienvenida
@@ -215,36 +211,55 @@ class _ActivityTabState extends State<_ActivityTab> {
                 bottomRight: Radius.circular(20),
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  '¡Saludos atleta! 💪',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '¡Saludos atleta! 💪',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: 220,
+                      child: Text(
+                        _quote,
+                        style: const TextStyle(
+                          color: Color(0xFFFF6B00),
+                          fontSize: 11,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  _quote,
-                  style: const TextStyle(
-                    color: Color(0xFFFF6B00),
-                    fontSize: 11,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
+                const Icon(Icons.bolt, color: Color(0xFFFF6B00), size: 32),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          const ActivityMonitorWidget(),
-          const SizedBox(height: 12),
-          const StepCounterWidget(),
-          const SizedBox(height: 12),
-          const RouteMapWidget(),
-          const SizedBox(height: 16),
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                ActivityMonitorWidget(),
+                SizedBox(height: 12),
+                StepCounterWidget(),
+                SizedBox(height: 12),
+                RouteMapWidget(),
+                SizedBox(height: 16),
+              ],
+            ),
+          ),
         ],
       ),
     );

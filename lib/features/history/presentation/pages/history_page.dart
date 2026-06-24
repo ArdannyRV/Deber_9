@@ -64,12 +64,18 @@ class _HistoryPageState extends State<HistoryPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 90,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF0A0A0A),
-                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,7 +92,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         const SizedBox(height: 4),
                         Text(
                           '${sessions.length} sesiones',
-                          style: const TextStyle(color: Color(0xFFFF6B00), fontSize: 14),
+                          style: const TextStyle(color: Color(0xFFFF6B00), fontSize: 11),
                         ),
                       ],
                     ),
