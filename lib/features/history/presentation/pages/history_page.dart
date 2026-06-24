@@ -60,18 +60,53 @@ class _HistoryPageState extends State<HistoryPage> {
         }
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _WeeklyChart(sessions: sessions),
-              const SizedBox(height: 20),
-              Text(
-                'Sesiones (${sessions.length})',
-                style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0A0A0A)),
+              Container(
+                height: 90,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0A0A0A),
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Mi Historial',
+                          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${sessions.length} sesiones',
+                          style: const TextStyle(color: Color(0xFFFF6B00), fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.bar_chart, color: Color(0xFFFF6B00), size: 32),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _WeeklyChart(sessions: sessions),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Sesiones',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0A0A0A)),
+                    ),
+                    const SizedBox(height: 12),
               Row(
                 children: [
                   _buildFilterButton('📅 Más reciente', 'fecha'),
@@ -86,6 +121,9 @@ class _HistoryPageState extends State<HistoryPage> {
                 _EmptyState()
               else
                 ...sorted.map((s) => _SessionCard(session: s)).toList(),
+                  ],
+                ),
+              ),
             ],
           ),
         );
@@ -140,7 +178,7 @@ class _WeeklyChart extends StatelessWidget {
                     TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF0A0A0A))),
             const SizedBox(height: 12),
             SizedBox(
-              height: 120,
+              height: 108,
               child: CustomPaint(
                 painter: _BarChartPainter(
                   values: values,
@@ -327,15 +365,29 @@ class _SessionCard extends StatelessWidget {
       child: Card(
         color: const Color(0xFFFFFFFF),
         margin: const EdgeInsets.only(bottom: 10),
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
         ),
         elevation: 0,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: IntrinsicHeight(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Container(
+                width: 4,
+                color: session.activityType == 'running'
+                    ? const Color(0xFFFF6B00)
+                    : session.activityType == 'walking'
+                        ? const Color(0xFF555555)
+                        : const Color(0xFFCCCCCC),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  child: Row(
+                    children: [
               Container(
                 width: 44,
                 height: 44,
@@ -373,6 +425,10 @@ class _SessionCard extends StatelessWidget {
                 icon: const Icon(Icons.edit_outlined, size: 20),
                 onPressed: () => _showRenameDialog(context),
                 color: const Color(0xFF999999),
+              ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

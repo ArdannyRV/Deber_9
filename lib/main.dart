@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'features/auth/data/datasources/biometric_datasource.dart';
 import 'features/auth/domain/usecases/authenticate_user.dart';
@@ -122,9 +124,16 @@ class HomePage extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Fitness Tracker', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0A0A0A))),
-            backgroundColor: const Color(0xFFFFFFFF),
-            foregroundColor: const Color(0xFF0A0A0A),
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+            title: const Row(
+              children: [
+                Icon(Icons.bolt, color: Color(0xFFFF6B00)),
+                SizedBox(width: 8),
+                Text('Fitness Tracker', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+              ],
+            ),
+            backgroundColor: const Color(0xFF0A0A0A),
+            foregroundColor: Colors.white,
             elevation: 0,
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(49.0),
@@ -139,7 +148,7 @@ class HomePage extends StatelessWidget {
                       Tab(icon: Icon(Icons.bar_chart), text: 'Historial'),
                     ],
                   ),
-                  const Divider(height: 1, thickness: 1, color: Color(0xFFE8E8E8)),
+                  const Divider(height: 1, thickness: 1, color: Color(0xFF1A1A1A)),
                 ],
               ),
             ),
@@ -156,21 +165,86 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _ActivityTab extends StatelessWidget {
+class _ActivityTab extends StatefulWidget {
   const _ActivityTab();
 
   @override
+  State<_ActivityTab> createState() => _ActivityTabState();
+}
+
+class _ActivityTabState extends State<_ActivityTab> {
+  static const List<String> _quotes = [
+    '"Siempre parece imposible hasta que se hace." — Nelson Mandela',
+    '"No cuentes los días, haz que los días cuenten." — Muhammad Ali',
+    '"La excelencia no es un acto, sino un hábito." — Will Durant',
+    '"La suerte es lo que sucede cuando la preparación se encuentra con la oportunidad." — Séneca',
+    '"La mejor manera de empezar es dejar de hablar y comenzar a hacer." — Walt Disney',
+    '"El futuro depende de lo que hagas hoy." — Mahatma Gandhi',
+    '"La perseverancia conquista todas las cosas." — Benjamin Franklin',
+    '"La energía y la persistencia conquistan todas las cosas." — Benjamin Franklin',
+    '"El éxito es la suma de pequeños esfuerzos repetidos cada día." — Robert Collier',
+  ];
+
+  late final String _quote;
+
+  @override
+  void initState() {
+    super.initState();
+    final random = Random();
+    _quote = _quotes[random.nextInt(_quotes.length)];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      padding: EdgeInsets.all(16),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          ActivityMonitorWidget(),
-          SizedBox(height: 12),
-          StepCounterWidget(),
-          SizedBox(height: 12),
-          RouteMapWidget(),
-          SizedBox(height: 16),
+          // Banner de bienvenida
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '¡Saludos atleta! 💪',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _quote,
+                  style: const TextStyle(
+                    color: Color(0xFFFF6B00),
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          const ActivityMonitorWidget(),
+          const SizedBox(height: 12),
+          const StepCounterWidget(),
+          const SizedBox(height: 12),
+          const RouteMapWidget(),
+          const SizedBox(height: 16),
         ],
       ),
     );

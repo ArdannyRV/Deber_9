@@ -130,25 +130,42 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: const Color(0xFFFFFFFF),
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFE8E8E8), width: 1),
+        side: BorderSide(
+          color: _isMonitoring ? Colors.transparent : const Color(0xFFE8E8E8),
+          width: 1,
+        ),
       ),
-      child: Padding(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: _isMonitoring
+              ? const LinearGradient(
+                  colors: [Color(0xFF0A0A0A), Color(0xFF1F1F1F)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: _isMonitoring ? null : const Color(0xFFFFFFFF),
+        ),
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.bolt, color: Color(0xFFFF6B00), size: 20),
-                    SizedBox(width: 6),
+                    const Icon(Icons.bolt, color: Color(0xFFFF6B00), size: 20),
+                    const SizedBox(width: 6),
                     Text(
                       'Monitor de Actividad',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0A0A0A)),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: _isMonitoring ? Colors.white : const Color(0xFF0A0A0A),
+                      ),
                     ),
                   ],
                 ),
@@ -157,19 +174,37 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
                   icon: Icon(_isMonitoring ? Icons.stop : Icons.play_arrow),
                   label: Text(_isMonitoring ? 'Detener' : 'Iniciar'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isMonitoring ? const Color(0xFFF5F5F5) : const Color(0xFFFF6B00),
+                    backgroundColor: _isMonitoring ? const Color(0xFF1A1A1A) : const Color(0xFFFF6B00),
                     foregroundColor: _isMonitoring ? const Color(0xFFFF6B00) : Colors.white,
                     side: _isMonitoring ? const BorderSide(color: Color(0xFFFF6B00)) : null,
                   ),
                 ),
               ],
             ),
-            const Divider(color: Color(0xFFE8E8E8)),
+            Divider(color: _isMonitoring ? const Color(0xFF333333) : const Color(0xFFE8E8E8)),
             const SizedBox(height: 10),
-            Icon(
-              _getActivityIcon(_currentState),
-              size: 40,
-              color: _isMonitoring ? const Color(0xFFFF6B00) : const Color(0xFF999999),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              padding: EdgeInsets.all(_currentState == ActivityState.running ? 16.0 : 12.0),
+              decoration: BoxDecoration(
+                color: _isMonitoring ? const Color(0xFFFF6B00) : Colors.transparent,
+                shape: BoxShape.circle,
+                boxShadow: _currentState == ActivityState.running
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFFFF6B00).withOpacity(0.5),
+                          blurRadius: 15,
+                          spreadRadius: 5,
+                        )
+                      ]
+                    : [],
+              ),
+              child: Icon(
+                _getActivityIcon(_currentState),
+                size: 40,
+                color: _isMonitoring ? Colors.white : const Color(0xFF999999),
+              ),
             ),
             const SizedBox(height: 6),
             Text(
@@ -177,7 +212,7 @@ class _ActivityMonitorWidgetState extends State<ActivityMonitorWidget> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: _isMonitoring ? const Color(0xFF0A0A0A) : const Color(0xFF555555),
+                color: _isMonitoring ? Colors.white : const Color(0xFF555555),
               ),
             ),
           ],
