@@ -56,22 +56,26 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<HistorySessionDeleted>(_onDelete);
   }
 
-  void _onLoad(HistoryLoadRequested event, Emitter<HistoryState> emit) {
-    emit(HistoryLoaded(_datasource.getAll()));
+  Future<void> _onLoad(HistoryLoadRequested event, Emitter<HistoryState> emit) async {
+    final sessions = await _datasource.getAll();
+    emit(HistoryLoaded(sessions));
   }
 
-  void _onAdd(HistorySessionAdded event, Emitter<HistoryState> emit) {
-    _datasource.add(event.session);
-    emit(HistoryLoaded(_datasource.getAll()));
+  Future<void> _onAdd(HistorySessionAdded event, Emitter<HistoryState> emit) async {
+    await _datasource.add(event.session);
+    final sessions = await _datasource.getAll();
+    emit(HistoryLoaded(sessions));
   }
 
-  void _onRename(HistorySessionRenamed event, Emitter<HistoryState> emit) {
-    _datasource.updateName(event.id, event.newName);
-    emit(HistoryLoaded(_datasource.getAll()));
+  Future<void> _onRename(HistorySessionRenamed event, Emitter<HistoryState> emit) async {
+    await _datasource.updateName(event.id, event.newName);
+    final sessions = await _datasource.getAll();
+    emit(HistoryLoaded(sessions));
   }
 
-  void _onDelete(HistorySessionDeleted event, Emitter<HistoryState> emit) {
-    _datasource.delete(event.id);
-    emit(HistoryLoaded(_datasource.getAll()));
+  Future<void> _onDelete(HistorySessionDeleted event, Emitter<HistoryState> emit) async {
+    await _datasource.delete(event.id);
+    final sessions = await _datasource.getAll();
+    emit(HistoryLoaded(sessions));
   }
 }

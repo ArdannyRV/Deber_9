@@ -24,4 +24,30 @@ class ActivitySessionModel extends ActivitySession {
       calories: session.calories,
     );
   }
+
+  factory ActivitySessionModel.fromJson(Map<String, dynamic> json) {
+    return ActivitySessionModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      startTime: DateTime.parse(json['startTime'] as String),
+      endTime: DateTime.parse(json['endTime'] as String),
+      activityType: json['activityType'] as String,
+      steps: json['steps'] as int,
+      distanceKm: (json['distanceKm'] as num).toDouble(),
+      calories: (json['calories'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime.toIso8601String(),
+      'activityType': activityType,
+      'steps': steps,
+      'distanceKm': distanceKm,
+      'calories': calories,
+    };
+  }
 }
