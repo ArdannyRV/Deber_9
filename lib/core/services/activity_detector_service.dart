@@ -23,7 +23,7 @@ class ActivityDetectorService {
   
   // Configuración de umbrales
   static const double _walkingThreshold = 13.0;
-  static const double _runningThreshold = 19.0;
+  static const double _runningThreshold = 21.0;
   // Umbral de caída subido considerablemente para que correr no se sobreponga
   static const double _fallThreshold = 55.0; 
 
