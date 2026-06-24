@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/history_bloc.dart';
 import '../../domain/entities/activity_session.dart';
+import '../../../../shared/widgets/banner_header.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -63,42 +64,10 @@ class _HistoryPageState extends State<HistoryPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Mi Historial',
-                          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${sessions.length} sesiones',
-                          style: const TextStyle(color: Color(0xFFFF6B00), fontSize: 11),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.bar_chart, color: Color(0xFFFF6B00), size: 32),
-                  ],
-                ),
+              BannerHeader(
+                title: 'Mi Historial',
+                subtitle: '${sessions.length} sesiones',
+                icon: Icons.bar_chart,
               ),
               Padding(
                 padding: const EdgeInsets.all(16),

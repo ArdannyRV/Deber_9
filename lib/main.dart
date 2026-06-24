@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'shared/widgets/banner_header.dart';
 import 'features/auth/data/datasources/biometric_datasource.dart';
 import 'features/auth/domain/usecases/authenticate_user.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
@@ -179,7 +180,11 @@ class _ActivityTabState extends State<_ActivityTab> {
     '"La excelencia no es un acto, sino un hábito." — Will Durant',
     '"El futuro depende de lo que hagas hoy." — Mahatma Gandhi',
     '"La perseverancia conquista todas las cosas." — Benjamin Franklin',
-    '"La energía y la persistencia conquistan todas las cosas." — Benjamin Franklin',
+    '"El éxito es la suma de pequeños esfuerzos." — Robert Collier',
+    '"La disciplina es el puente hacia el logro." — Jim Rohn',
+    '"Nunca es tarde para ser lo que podrías ser." — George Eliot',
+    '"No esperes oportunidades, créalas." — Roy T. Bennett',
+    '"El fracaso es éxito en progreso." — Albert Einstein',
   ];
 
   late final String _quote;
@@ -197,55 +202,10 @@ class _ActivityTabState extends State<_ActivityTab> {
       child: Column(
         children: [
           // Banner de bienvenida
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '¡Saludos atleta! 💪',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      width: 220,
-                      child: Text(
-                        _quote,
-                        style: const TextStyle(
-                          color: Color(0xFFFF6B00),
-                          fontSize: 11,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const Icon(Icons.bolt, color: Color(0xFFFF6B00), size: 32),
-              ],
-            ),
+          BannerHeader(
+            title: '¡Saludos atleta! 💪',
+            subtitle: _quote,
+            icon: Icons.bolt,
           ),
           const Padding(
             padding: EdgeInsets.all(16),

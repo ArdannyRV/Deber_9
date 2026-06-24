@@ -36,21 +36,16 @@ class ActivityDetectorService {
       final magnitude = sqrt(pow(event.x, 2) + pow(event.y, 2) + pow(event.z, 2));
       final now = DateTime.now();
       
-      // Detección de caída (Impacto en fuerza G extrema)
       if (magnitude > _fallThreshold) {
         _fallController.add(null);
       }
 
-      // ✅ FIX: No borrar _lastRunTime cuando se detecta walking,
-      // dejar que expire naturalmente por tiempo
       if (magnitude > _runningThreshold) {
         _lastRunTime = now;
         _lastWalkTime = now;
       } else if (magnitude > _walkingThreshold) {
-        // NO tocamos _lastRunTime aquí
         _lastWalkTime = now;
       } else {
-        // Solo resetear si ya expiró la ventana de tiempo
         if (_lastRunTime != null &&
             now.difference(_lastRunTime!).inMilliseconds > 1500) {
           _lastRunTime = null;

@@ -27,7 +27,7 @@ class GpsDataSourceImpl implements GpsDataSource {
         timestamp: position.timestamp,
       );
     } catch (e) {
-      print('Error obteniendo ubicación: $e');
+      debugPrint('Error obteniendo ubicación: $e');
       return null;
     }
   }
