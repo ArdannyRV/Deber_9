@@ -9,25 +9,20 @@ enum ActivityState {
   running,
 }
 
-/// Servicio que utiliza sensors_plus para detectar actividad física
-/// y posibles caídas utilizando magnitudes y promedio móvil.
 class ActivityDetectorService {
   final _activityController = BehaviorSubject<ActivityState>.seeded(ActivityState.stationary);
   final _fallController = PublishSubject<void>();
 
   StreamSubscription? _accelerometerSubscription;
   
-  // Histéresis basada en tiempo (Timeouts absolutos)
   DateTime? _lastRunTime;
   DateTime? _lastWalkTime;
   
   // Configuración de umbrales
   static const double _walkingThreshold = 13.0;
   static const double _runningThreshold = 21.0;
-  // Umbral de caída subido considerablemente para que correr no se sobreponga
   static const double _fallThreshold = 55.0; 
 
-  // Estado interno para el debounce asimétrico
   ActivityState _lastEmittedState = ActivityState.stationary;
   ActivityState _pendingState = ActivityState.stationary;
   Timer? _debounceTimer;
@@ -47,23 +42,24 @@ class ActivityDetectorService {
       }
 
       // Actualizar marcas de tiempo basadas en impactos crudos
+      // En el bloque de clasificación, limpiar cuando ya no aplica:
       if (magnitude > _runningThreshold) {
         _lastRunTime = now;
-        _lastWalkTime = now; // Si la fuerza supera correr, automáticamente supera caminar
-      } else if (magnitude > _walkingThreshold) {
         _lastWalkTime = now;
+      } else if (magnitude > _walkingThreshold) {
+        _lastRunTime = null; 
+        _lastWalkTime = now;
+      } else {
+        _lastRunTime = null;
+        _lastWalkTime = null;
       }
 
-      // Clasificación de actividad por cercanía temporal (Histéresis)
       ActivityState calculatedState;
       if (_lastRunTime != null && now.difference(_lastRunTime!).inMilliseconds < 1500) {
-        // Si el último impacto fuerte fue hace menos de 1.5 segundos
         calculatedState = ActivityState.running;
       } else if (_lastWalkTime != null && now.difference(_lastWalkTime!).inMilliseconds < 2000) {
-        // Si el último impacto moderado fue hace menos de 2.0 segundos
         calculatedState = ActivityState.walking;
       } else {
-        // Ha pasado más de 2 segundos sin registrar ningún impacto por encima del umbral
         calculatedState = ActivityState.stationary;
       }
 
@@ -71,20 +67,18 @@ class ActivityDetectorService {
     });
   }
 
-  // Opción 3: Debounce asimétrico
   void _handleStateTransition(ActivityState newState) {
-    if (newState == _pendingState) return; 
-    
+    if (newState == _pendingState) return;
     _pendingState = newState;
-    _debounceTimer?.cancel(); 
-
+    _debounceTimer?.cancel();
     if (newState == _lastEmittedState) return;
 
-    // Evaluamos si sube o baja la intensidad (stationary=0, walking=1, running=2)
     int oldIntensity = _lastEmittedState.index;
     int newIntensity = newState.index;
 
-    Duration delay = const Duration(milliseconds: 1500); // 1.5 segundos unificados
+    final delay = newIntensity > oldIntensity
+        ? const Duration(milliseconds: 600)
+        : const Duration(milliseconds: 2000);
 
     _debounceTimer = Timer(delay, () {
       _lastEmittedState = newState;
@@ -100,7 +94,6 @@ class ActivityDetectorService {
     _debounceTimer?.cancel();
   }
 
-  /// Retorna un stream de actividad ya debounced internamente
   Stream<ActivityState> get debouncedActivityStream {
     return _activityController.stream.distinct();
   }

@@ -6,7 +6,7 @@ class VoiceService {
 
   Future<void> init() async {
     await _flutterTts.setLanguage("es-ES");
-    await _flutterTts.setSpeechRate(0.5); // Velocidad normal de habla
+    await _flutterTts.setSpeechRate(0.5); 
     await _flutterTts.setVolume(1.0);
     await _flutterTts.setPitch(1.0);
   }
