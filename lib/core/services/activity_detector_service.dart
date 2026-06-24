@@ -41,17 +41,24 @@ class ActivityDetectorService {
         _fallController.add(null);
       }
 
-      // Actualizar marcas de tiempo basadas en impactos crudos
-      // En el bloque de clasificación, limpiar cuando ya no aplica:
+      // ✅ FIX: No borrar _lastRunTime cuando se detecta walking,
+      // dejar que expire naturalmente por tiempo
       if (magnitude > _runningThreshold) {
         _lastRunTime = now;
         _lastWalkTime = now;
       } else if (magnitude > _walkingThreshold) {
-        _lastRunTime = null; 
+        // NO tocamos _lastRunTime aquí
         _lastWalkTime = now;
       } else {
-        _lastRunTime = null;
-        _lastWalkTime = null;
+        // Solo resetear si ya expiró la ventana de tiempo
+        if (_lastRunTime != null &&
+            now.difference(_lastRunTime!).inMilliseconds > 1500) {
+          _lastRunTime = null;
+        }
+        if (_lastWalkTime != null &&
+            now.difference(_lastWalkTime!).inMilliseconds > 2000) {
+          _lastWalkTime = null;
+        }
       }
 
       ActivityState calculatedState;
